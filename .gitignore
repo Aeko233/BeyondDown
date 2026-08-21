@@ -1,0 +1,12 @@
+node_modules/
+downloads/
+dev-server.log
+*.log
+.dev.vars
+Bili23-Downloader-main/
+.mcp.json
+public/vendor/ffmpeg/ffmpeg-core.wasm
+# 支付宝手工上传物：控制台现打现传，不入仓库（dist/web 供 CF 构建，保留跟踪）
+dist/alipay.cjs
+dist/beyonddown-fn.zip
+dist/fn/

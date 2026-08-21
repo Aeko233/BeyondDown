@@ -1,0 +1,23 @@
+{
+  "name": "beyonddown-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:api": "bun dev-server.mjs",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test test/frontend.test.ts",
+    "verify": "bun test/verify.mjs",
+    "check": "bun run typecheck && bun run test && bun run verify && bun run build",
+    "worker:dev": "bun run build && bun x wrangler dev",
+    "deploy": "bun run build && bun x wrangler deploy",
+    "build:alipay": "bun build ./adapters/alipay.js --target=node --format=cjs --outfile=dist/alipay.cjs",
+    "pack:alipay": "bash scripts/pack-alipay.sh"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vite": "^8.2.1"
+  }
+}

@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BeyondDown</title>
+    <script src="/vendor/qrcode.min.js"></script>
+    <script type="module" crossorigin src="/assets/index-Bt6hIvS-.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-QsuYZOfe.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="BeyondDown 首页">BeyondDown</a>
+      <div id="user-area">
+        <button id="btn-show-login" class="ghost">登录 B站</button>
+        <div id="user-chip" class="hidden">
+          <span id="user-name"></span>
+          <span id="user-vip" class="vip hidden">大会员</span>
+          <button id="btn-logout" class="ghost small">退出</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+
+      <section id="login-card" class="modal hidden" aria-hidden="true">
+        <div
+          class="modal-card"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="login-title"
+        >
+          <div class="modal-header">
+            <div class="section-heading compact-heading">
+              <p class="eyebrow">ACCOUNT</p>
+              <h2 id="login-title">登录</h2>
+            </div>
+            <button
+              id="btn-login-close"
+              class="icon-button"
+              type="button"
+              aria-label="关闭登录窗口"
+            >
+              ×
+            </button>
+          </div>
+          <p class="section-copy login-copy">
+            登录后可以获取账号权限内的更高清晰度。
+          </p>
+          <div class="tabs">
+            <button class="tab active" data-tab="qr">扫码登录</button>
+            <button class="tab" data-tab="paste">粘贴 Cookie</button>
+            <button class="tab" data-tab="file">导入文件</button>
+          </div>
+
+          <div id="tab-qr" class="tab-panel">
+            <div id="qr-box">
+              <div id="qr-code"></div>
+              <div id="qr-status">正在获取二维码…</div>
+            </div>
+            <button id="btn-qr-refresh" class="ghost">刷新二维码</button>
+            <p class="hint">
+              使用 B站 App 扫码。凭据加密存于本站会话令牌，仅存当前标签页。
+            </p>
+          </div>
+
+          <div id="tab-paste" class="tab-panel hidden">
+            <textarea
+              id="cookie-input"
+              rows="6"
+              placeholder="粘贴 Cookie（如 SESSDATA=xxx; bili_jct=xxx; DedeUserID=xxx），必须包含 SESSDATA"
+              autocomplete="off"
+              spellcheck="false"
+            ></textarea>
+            <button id="btn-cookie-submit">验证并登录</button>
+            <p class="hint">
+              Cookie 仅用于本次验证，不落日志。获取：浏览器 F12 → 应用/存储 →
+              Cookie → bilibili.com。
+            </p>
+          </div>
+
+          <div id="tab-file" class="tab-panel hidden">
+            <input type="file" id="cookie-file" accept=".txt,.json" />
+            <button id="btn-file-submit">解析并登录</button>
+            <p class="hint">
+              支持 Netscape cookies.txt（yt-dlp / curl 导出）与浏览器插件导出的
+              JSON。文件本地解析，不上传。
+            </p>
+          </div>
+          <div id="login-error" class="error hidden"></div>
+        </div>
+      </section>
+
+      <section class="card parse-card" aria-labelledby="parse-title">
+        <div class="section-heading compact-heading">
+          <p class="eyebrow">01 · INPUT</p>
+          <h2 id="parse-title">输入视频</h2>
+        </div>
+        <div class="parse-row">
+          <input
+            id="video-input"
+            type="text"
+            placeholder="输入 B站视频链接 / BV 号（支持 b23.tv 短链）"
+          />
+          <button id="btn-parse">解析</button>
+        </div>
+      </section>
+
+      <section
+        id="video-card"
+        class="card hidden"
+        aria-labelledby="video-title"
+      >
+        <div class="section-heading compact-heading">
+          <p class="eyebrow">02 · PREPARE</p>
+          <h2 id="video-title">视频信息</h2>
+        </div>
+        <div class="video-head">
+          <div class="video-meta">
+            <h3 id="v-title"></h3>
+            <div id="v-owner" class="muted"></div>
+            <div id="v-stat" class="muted small"></div>
+            <div id="v-desc" class="muted small clamp"></div>
+          </div>
+        </div>
+        <div class="row" id="page-row">
+          <label>分P</label>
+          <select id="page-select"></select>
+        </div>
+        <div class="row">
+          <button id="btn-playurl">获取播放地址</button>
+          <span id="login-note" class="muted small"></span>
+        </div>
+      </section>
+
+      <section
+        id="tracks-card"
+        class="card hidden"
+        aria-labelledby="tracks-title"
+      >
+        <div class="section-heading compact-heading">
+          <p class="eyebrow">03 · DOWNLOAD</p>
+          <h2 id="tracks-title">选择轨道并下载</h2>
+          <p class="section-copy">
+            选择视频和音频轨道，下载任务会在你的设备上完成。
+          </p>
+        </div>
+        <h3>选择轨道</h3>
+        <div class="row">
+          <label>视频轨</label>
+          <select id="video-track-select"></select>
+        </div>
+        <div class="row">
+          <label>音频轨</label>
+          <select id="audio-track-select"></select>
+        </div>
+
+        <h3>导出下载</h3>
+        <div class="export-buttons">
+          <button id="btn-export-bat">
+            下载 .bat 脚本（Windows，首次自动配置）
+          </button>
+          <button id="btn-export-sh">下载 .sh 脚本</button>
+          <button id="btn-export-stream" class="ghost">
+            复制 720P 直链（免登录，供 aria2/IDM）
+          </button>
+          <button id="btn-more-options" class="ghost">更多选项</button>
+          <div id="more-options" class="hidden">
+            <button id="btn-export-ytdlp" class="ghost">
+              复制 yt-dlp 命令
+            </button>
+            <button id="btn-export-raw" class="ghost">复制直链 + 请求头</button>
+            <button id="btn-export-aria2" class="ghost">发送到 aria2</button>
+            <details class="aria2-conf">
+              <summary>aria2 设置</summary>
+              <div class="row">
+                <label>RPC 地址</label>
+                <input
+                  id="aria2-rpc"
+                  type="text"
+                  value="http://localhost:6800/jsonrpc"
+                />
+              </div>
+              <div class="row">
+                <label>RPC Secret</label>
+                <input
+                  id="aria2-secret"
+                  type="password"
+                  placeholder="rpc-secret，未设置可留空"
+                />
+              </div>
+              <p class="hint">
+                aria2 需以 --enable-rpc --rpc-allow-origin-all --rpc-secret
+                &lt;secret&gt; 启动。
+              </p>
+            </details>
+          </div>
+        </div>
+        <p class="hint">
+          直链有效期较短，请导出后尽快下载。<br />
+          .bat 脚本首次运行会自动下载 ffmpeg（约
+          170MB，一次性），之后所有下载开箱即用；<br />
+          .sh 脚本需要本机已有 curl 与 ffmpeg。
+        </p>
+        <div id="export-result" class="result hidden"></div>
+      </section>
+    </main>
+
+    <footer>
+      BeyondDown · 仅供个人学习与备份，请尊重版权 ·
+      <a href="https://www.bilibili.com" target="_blank" rel="noopener"
+        >bilibili</a
+      >
+    </footer>
+  </body>
+</html>

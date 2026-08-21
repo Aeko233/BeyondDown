@@ -1,0 +1,9 @@
+# BeyondDown 前端配置 — 修改后刷新页面生效
+#
+# 本文件随站点公开，严禁写入任何密钥。
+
+# API 根地址。留空为同源模式（/api/* 由 Worker 转发），无浏览器跨域/预检问题。
+api_base = ""
+
+# aria2 默认 RPC 地址（页面「更多选项」里可临时覆盖，仅存本机）
+aria2_rpc = "http://localhost:6800/jsonrpc"

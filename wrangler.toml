@@ -1,0 +1,23 @@
+name = "beyonddown"
+main = "worker.js"
+compatibility_date = "2025-06-01"
+
+[assets]
+directory = "./dist/web"
+binding = "ASSETS"
+
+# ---- 自部署选项 ----
+# SESSION_SECRET 是敏感值：本地写入 .dev.vars，生产用 `wrangler secret put SESSION_SECRET`，不进本文件。
+# SITE_ORIGIN：允许的前端源（CORS）；静态站与 API 分域部署时填前端地址，缺省 *
+# BILI_PROXY：B站反向代理前缀（部署在国内云函数等出口未被风控的环境，契约见 README）
+# 设置后所有 B站上游请求改走 ${BILI_PROXY}/<host>/<path>
+# BILI_PROXY = "https://your-fc.example.com/bili"
+
+# [[kv_namespaces]]
+# binding = "SESSION"
+# id = "your-kv-namespace-id"
+
+# API_PROXY：/api/* 转发到代理云函数（服务器对服务器，绕开平台网关吞 OPTIONS + CF 出口被B站风控）。
+# [vars]
+# API_PROXY = "https://your-proxy-domain.com"
+# SITE_ORIGIN = "https://your-frontend-domain.com"
