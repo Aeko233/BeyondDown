@@ -1,17 +1,17 @@
-# AGENTS.md — BeyondDown-web 项目手册（合并版）
+# AGENTS.md — BeyondDown-web 项目手册
 
 给接手本项目的模型。先通读本文再动手。用户用中文交流，快速迭代，会亲自测试并贴报错回来。
-本文合并自 CLAUDE.md（行为准则）、commit格式.md（Commit 规范）、旧 AGENTS.md（交接）与 PLAN.md（设计决策精华）；源文件已删除，内容全部内嵌于此。
+本文是内部工程规范与实现依据；面向用户的说明见 `README.md`。
 
-## 0. 行为准则（强制，源自 CLAUDE.md）
+## 0. 行为准则（强制）
 
 1. **先思考再动手**：不假设、不隐藏困惑。不确定就问；有歧义列出选项，别默默选一个。
 2. **简单优先**：最少代码解决。不建单次使用的抽象，不写多余配置/错误处理。200 行能 50 行就重写。
 3. **外科手术式修改**：只碰必须碰的，不顺手"改进"相邻代码。你改出的孤儿（未用导入/变量）要清，既有死代码只提不删。每行改动都能追溯到用户请求。
 4. **目标驱动**：先定验收标准再实现（"加校验"→"写非法输入测试再让它过"）；多步任务先列 plan 与验证点。
-5. **先验证再实现**：B站接口行为必须实测/查阅，不允许凭猜测补行为（§6 事实勿重新推导）。
+5. **先验证再实现**：B站接口行为必须实测/查阅，不允许凭猜测补行为（见 §8，勿重新推导）。
 
-## 1. Commit 规范（源自 commit格式.md，Conventional Commits）
+## 1. Commit 规范（Conventional Commits）
 
 格式：`<type>(<scope>): <subject>`，空行分隔 body / footer。subject 50 字内，body 72 字折行。
 
@@ -20,12 +20,14 @@ type:  feat 新特性 | fix 修问题 | refactor 重构 | docs 文档 | style �
 scope: 影响范围（可空），如 frontend、backend、auth、download、build
 ```
 
-## 2. 设计规范（强制）
+## 2. 设计规范（强制，Apple Style）
 
-- **`Design.md`（仓库根）是强制性设计规范**：所有 UI/UX 改动必须符合 Apple Style——白底 #fff、辅底 #f5f5f7、强调蓝 #0071e3、大量留白、圆角 rounded-xl/2xl、微妙阴影、无渐变。
-- 绝对禁止：`bg-gradient*`、`shadow-2xl`、`shadow-inner`、`border-2/4/8`、过多颜色、花哨装饰、玻璃态作默认。
-- 交互必备：hover / focus-visible 反馈、prefers-reduced-motion 备选、移动端适配。
-- 完整细则：`apple-style-hard-prompt.md`（用户侧未跟踪文件）。
+所有 UI/UX 改动必须符合 Apple 风格：白底 `#fff`、辅底 `#f5f5f7`、强调蓝 `#0071e3`、大量留白、圆角 `rounded-xl` / `rounded-2xl`、微妙阴影、无渐变。
+
+- **绝对禁止**：`bg-gradient*`、`shadow-2xl`、`shadow-inner`、`border-2/4/8`、过多颜色、花哨装饰、玻璃态作默认。
+- **交互必备**：hover / `focus-visible` 反馈、`prefers-reduced-motion` 备选、移动端适配。
+- **关键令牌**：主底 `bg-white`；辅底 `bg-[#f5f5f7]`；主按钮 `bg-[#0071e3] text-white`；文字 `text-[#1d1d1f]`；次要文字 `text-[#86868b]`；卡片 `bg-white rounded-2xl shadow-sm`。
+- **组件**：按钮 `rounded-full`；输入框 `bg-[#f5f5f7] rounded-xl`；徽章 `rounded-full`。
 
 ## 3. 项目是什么
 
@@ -34,18 +36,18 @@ B站视频下载 Web 应用。前端 **Vite + Vanilla TypeScript**；后端统�
 ## 4. 用户环境（重要）
 
 - Windows + Git Bash；有 bun 1.3.14，无 Node、无 Python（CF 构建环境除外）。
-- ffmpeg 在 `%USERPROFILE%\beyonddown\bin\ffmpeg.exe`（无 ffprobe）。旧路径 tools/ffmpeg/ 已删，勿引用。
+- ffmpeg 在 `%USERPROFILE%\beyonddown\bin\ffmpeg.exe`（无 ffprobe）。旧路径 `tools/ffmpeg/` 已删，勿引用。
 - gh CLI 已登录；仓库 github.com/Aeko233/BeyondDown（私有）。
 - 终端中文乱码是 GBK 显示问题，文件本身 UTF-8。
 
-## 5. 架构现状
+## 5. 架构
 
 ```text
 src/               Vite + Vanilla TS 前端（api / config / state / features / ui 分层）
 public/            Vite 原样复制资产（config.toml / qrcode）；不放业务源码
 dist/web/          前端构建产物；CF ASSETS 与独立服务器共用（入库，CF 构建依赖）
 worker.js          统一路由入口（10 个 /api/* 端点 + OPTIONS/CORS 注入 + ASSETS 静态）
-lib/               bili.js(B站客户端+风控激活链+WBI) / session.js(无状态令牌) / wbi / md5 / murmur3 / http
+lib/               bili.js（B站客户端+风控激活链+WBI）/ session.js（无状态令牌）/ wbi / md5 / murmur3 / http
 functions/api/     各端点处理器（worker.js 挂载）
 adapters/alipay.js 支付宝云函数入口（FetchEvent 调度，平台不认 exports.main）
 server.mjs         独立部署入口（bun，需先 bun run build）
@@ -63,6 +65,10 @@ scripts/pack-alipay.sh  支付宝部署包一键打包（build → 同步 index.
 - **风控激活链**（lib/bili.js activateRisk）：finger/spi → buvid3/4（失败本地自生成）→ GenWebTicket(HMAC) → ExClimbWuzhi。各环独立降级不阻断。
 - **BILI_PROXY**：环境变量，设置后所有 B站上游改走 `${BILI_PROXY}/<host>/<path>`（国内反代，解 CF 出口封锁）。
 - **部署拓扑**：前端 `config.toml` 直连支付宝云函数（`api_base` 非空），CF 只托管静态。`API_PROXY` 同源代理仅作兜底（CF→支付宝 TLS 间歇 520/525，勿改回默认）。
+
+### API 端点（worker.js routes）
+
+`/api/auth/qrcode` `/api/auth/poll` `/api/auth/cookie` `/api/auth/me` `/api/auth/logout` `/api/video` `/api/playurl` `/api/download/export` `/api/download/stream` `/api/config`
 
 ## 6. 关键事实（实测结论，勿重新推导）
 
@@ -87,7 +93,7 @@ scripts/pack-alipay.sh  支付宝部署包一键打包（build → 同步 index.
 ```bash
 bun run dev            # Vite 前端 http://localhost:5173（/api 代理到 8788；DEV 模式 api_base=""）
 DEV=1 bun run dev:api  # API + dist/web http://localhost:8788（含 /api/dev/token）
-bun run check          # TS 严格检查 + 前端单测 + 14 项真实接口回归 + Vite 构建
+bun run check          # typecheck + 前端单测 + 14 项真实接口回归 + Vite 构建
 bun run pack:alipay    # 支付宝部署包一键打包 → dist/beyonddown-fn.zip（控制台手动上传）
 git push               # CF 自动构建部署 worker
 ```
@@ -118,11 +124,8 @@ git push               # CF 自动构建部署 worker
 - 生成物（dist/web、alipay.cjs、zip）不人工维护；dist/web 入库是 CF 构建需要，支付宝手工产物 gitignore。
 - 工程实践：模块边界、严格务实 TS、构建产物不入手（迁移时参考过 Vite 源码，目录已删）。
 
-## 12. 用户侧未跟踪文件
+## 12. 仓库文档分工
 
-- `apple-style-hard-prompt.md`、交接 md——勿动勿删。（`参考/` 目录已按用户要求删除：含 Bili23 风控实证源码与 vite-main，其结论已内化在 §6/§11）
-
-## 13. 仓库里还有什么
-
-- `README.md` 部署与 API 文档 / `Design.md` 强制设计规范。
-- 进行中任务：无。支付宝部署完成、扫码登录正常、前端为 Apple 风格模态 UI。
+- `README.md`：面向人类的部署与产品说明。
+- `AGENTS.md`（本文）：内部工程规范与实现依据。
+- 用户侧未跟踪文件（如设计提示词）——勿动勿删。

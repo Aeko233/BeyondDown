@@ -2,19 +2,15 @@
 
 一个轻量的 Bilibili 视频下载工具，帮助用户解析视频并导出可直接下载的任务。
 
-## Why
+## 特性
 
-Bilibili 的登录态、清晰度和 CDN 请求头让本地下载流程变得繁琐；BeyondDown 将解析、登录和下载任务集中到一个简洁的 Web 界面，同时尽量不让视频字节经过服务器。
-
-## Features
-
-- **多种登录方式**：支持扫码、Cookie 和 `cookies.txt` / JSON 导入。
-- **视频解析**：支持视频信息、WBI 签名和 DASH 音视频轨解析。
-- **灵活导出**：生成 `.bat`、`.sh`、aria2、yt-dlp 或直链下载任务。
+- **多种登录方式**：扫码、Cookie、`cookies.txt` / JSON 导入。
+- **视频解析**：视频信息、WBI 签名、DASH 音视频轨解析。
+- **灵活导出**：`.bat`、`.sh`、aria2、yt-dlp、直链下载任务。
 - **低服务器带宽**：下载脚本和直链由用户端直接请求 Bilibili CDN。
-- **安全会话**：使用 AES-GCM 加密的无状态 Bearer 会话令牌，不依赖 KV 保存登录态。
+- **安全会话**：AES-GCM 加密的无状态 Bearer 会话令牌。
 
-## Quick Start
+## 快速开始
 
 需要 [Bun](https://bun.sh/)。
 
@@ -39,7 +35,9 @@ bun run dev           # http://localhost:5173
 bun run check
 ```
 
-## Cloudflare Workers
+## 部署
+
+### Cloudflare Workers
 
 ```bash
 bun x wrangler login
@@ -48,6 +46,21 @@ bun run deploy
 ```
 
 Cloudflare 海外出口可能被 Bilibili 风控拦截。生产环境请在 `wrangler.toml` 配置可用的 `API_PROXY` 或 `BILI_PROXY`，并按需设置 `SITE_ORIGIN`。
+
+### 支付宝云函数
+
+```bash
+bun run pack:alipay   # 生成 dist/beyonddown-fn.zip，到控制台手动上传
+```
+
+前端 `config.toml` 的 `api_base` 指向该函数直连，Cloudflare 只托管静态。
+
+### 独立服务器
+
+```bash
+bun run build
+bun server.mjs        # http://localhost:8788
+```
 
 ## License
 
