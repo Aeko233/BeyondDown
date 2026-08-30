@@ -96,6 +96,7 @@ main {
   width: min(100% - 48px, 920px);
   margin: 0 auto;
   padding: 40px 0 60px;
+}
 .intro {
   max-width: 680px;
   padding: 0 8px 48px;
@@ -472,6 +473,7 @@ footer {
   margin-top: auto;
   font-size: 12px;
   text-align: center;
+}
 footer a {
   color: var(--muted);
 }
@@ -490,6 +492,7 @@ footer a {
   }
   .intro {
     padding: 0 4px 36px;
+  }
   h1 {
     font-size: 48px;
   }
