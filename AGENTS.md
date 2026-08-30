@@ -95,7 +95,8 @@ bun run dev            # Vite 前端 http://localhost:5173（/api 代理到 8788
 DEV=1 bun run dev:api  # API + dist/web http://localhost:8788（含 /api/dev/token）
 bun run check          # typecheck + 前端单测 + 14 项真实接口回归 + Vite 构建
 bun run pack:alipay    # 支付宝部署包一键打包 → dist/beyonddown-fn.zip（控制台手动上传）
-git push               # CF 自动构建部署 worker
+# 部署 CF：git push 只推代码，不会自动部署。必须显式跑下面这条（需要 CF 凭证）。
+bun run deploy         # build + wrangler deploy → 部署 beyonddown worker
 ```
 
 ## 9. 安全与红线
