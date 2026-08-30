@@ -150,7 +150,7 @@ function restoreAria2Config(): void {
       byId<HTMLInputElement>("aria2-secret").value = config.secret;
     }
   } catch {
-    // Ignore invalid local settings and keep the configured defaults.
+    // 忽略无效的本地配置，保留默认值。
   }
 }
 

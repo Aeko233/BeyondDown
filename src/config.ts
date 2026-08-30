@@ -29,7 +29,7 @@ export async function loadConfig(): Promise<void> {
     if (!response.ok) return;
     config = parseSimpleToml(await response.text());
   } catch {
-    // The default same-origin API remains usable when the optional config is unavailable.
+    // 配置不可用时走默认同源 API，仍可正常使用。
   }
 }
 

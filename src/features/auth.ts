@@ -124,7 +124,7 @@ export function parseCookieFile(source: string): string {
         .join("; ");
     }
   } catch {
-    // Continue with Netscape cookies.txt parsing.
+    // 不是 JSON，继续按 Netscape cookies.txt 格式解析。
   }
 
   const pairs: string[] = [];
